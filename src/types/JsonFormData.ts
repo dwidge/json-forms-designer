@@ -22,6 +22,6 @@ export const defaultJsonFormData: JsonFormData = {};
 export const defaultJsonFormDataString: string = "{}";
 
 export const convertJsonFormDataToString = (s: JsonFormData): string =>
-  JSON.stringify(s, null, 2);
+  JSON.stringify(s);
 export const convertStringToJsonFormData = (s: string): JsonFormData =>
   JsonFormData.parse({ ...defaultJsonFormData, ...JSON.parse(s) });

@@ -26,6 +26,6 @@ export const defaultFormSchemaString: string =
   JSON.stringify(defaultFormSchema);
 
 export const convertFormSchemaToString = (s: FormSchema): string =>
-  JSON.stringify(s, null, 2);
+  JSON.stringify(s);
 export const convertStringToFormSchema = (s: string): FormSchema =>
   FormSchema.parse({ ...defaultFormSchema, ...JSON.parse(s) });
