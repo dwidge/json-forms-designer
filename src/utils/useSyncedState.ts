@@ -17,6 +17,7 @@ export function useSyncedState<T, U>(
       return convertToInternal(externalState);
     } catch (e) {
       setError(e as Error);
+      console.log("useSyncedState1", defaultValue, e);
       return defaultValue;
     }
   });
@@ -29,6 +30,7 @@ export function useSyncedState<T, U>(
         setInternalState(convertedState);
     } catch (e) {
       setError(e as Error);
+      console.log("useSyncedState2", defaultValue, e);
     }
   }, [externalState, convertToInternal]);
 
@@ -51,6 +53,7 @@ export function useSyncedState<T, U>(
         setExternalState(newExternalState);
     } catch (e) {
       setError(e as Error);
+      console.log("useSyncedState3", defaultValue, e);
     }
   };
 
