@@ -5,7 +5,16 @@
 import z from "zod";
 export const JsonFormData = z.record(
   z.string(),
-  z.union([z.string(), z.number(), z.lazy(() => JsonFormData)]).optional(),
+  z
+    .union([
+      z.string(),
+      z.number(),
+      z.boolean(),
+      z.lazy(() => JsonFormData),
+      z.lazy(() => JsonFormData.array()),
+      z.null(),
+    ])
+    .optional(),
 );
 export type JsonFormData = z.infer<typeof JsonFormData>;
 
