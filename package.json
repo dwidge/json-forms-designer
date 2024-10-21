@@ -41,6 +41,7 @@
     "react-native-error-boundary": "^1.2.5",
     "react-native-paper": "^5.12.5",
     "react-native-web": "^0.19.12",
+    "ts-deepmerge": "^6.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

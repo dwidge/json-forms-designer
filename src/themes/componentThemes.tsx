@@ -4,97 +4,218 @@
 
 import { WithClassNameProps } from "@dwidge/class-name-rnw";
 import { createTheme, CreateThemeOptions } from "@rneui/themed";
-import { merge } from "lodash";
-import { StyleSheet, TextStyle, ViewStyle } from "react-native";
+import { StyleSheet, TextStyle, ViewStyle, View } from "react-native";
 import { darkMaterialTheme, lightMaterialTheme } from "./materialThemes.js";
+import * as Paper from "react-native-paper";
+import merge from "ts-deepmerge";
 
 export const mergeThemes = (
-  themes: CreateThemeOptions[]
-): CreateThemeOptions | undefined =>
-  themes.reduce((acc, theme) => merge(acc, theme), themes[0]);
+  themes: CreateThemeOptions[],
+): CreateThemeOptions | undefined => merge(...themes);
 
 declare module "@rneui/themed" {
   export interface ComponentTheme {
-    StyledButton: Partial<WithClassNameProps<TextStyle>>;
-    StyledText: Partial<WithClassNameProps<TextStyle>>;
-    StyledView: Partial<WithClassNameProps<ViewStyle>>;
+    StyledButton: Partial<
+      React.ComponentProps<typeof Paper.Button> & WithClassNameProps<TextStyle>
+    >;
+    StyledView: Partial<
+      React.ComponentProps<typeof View> & WithClassNameProps<ViewStyle>
+    >;
+    StyledText: Partial<
+      React.ComponentProps<typeof Paper.Text> & WithClassNameProps<TextStyle>
+    >;
+    StyledInput: Partial<
+      React.ComponentProps<typeof Paper.TextInput> &
+        WithClassNameProps<TextStyle>
+    >;
   }
 }
+
+const lightStyledViewStylesheet = StyleSheet.create<Record<string, ViewStyle>>({
+  "array-container": {
+    flex: 1,
+    gap: 10,
+  },
+  "vertical-layout": {
+    flexDirection: "column",
+    gap: 10,
+  },
+  "horizontal-layout": {
+    flexDirection: "row",
+    gap: 10,
+  },
+  "group-layout": {
+    flexDirection: "column",
+    gap: 10,
+    padding: 10,
+    backgroundColor: "#99999933",
+    overflow: "hidden",
+    borderRadius: 10,
+  },
+  "horizontal-layout-item": { flex: 1 },
+  "category-list category-subcategories": {
+    flex: 1,
+    gap: 10,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  categorization: { flexDirection: "column", gap: 10 },
+  "categorization-master": { flexDirection: "row" },
+  "categorization-detail": {
+    gap: 10,
+  },
+  "category-subcategories": {
+    flexDirection: "row",
+  },
+  "category-label": {
+    borderWidth: 1,
+    maxWidth: "100%",
+    borderRadius: 10,
+    borderColor: lightMaterialTheme.colors?.inversePrimary,
+  },
+  "category-label selected": {
+    color: lightMaterialTheme.colors.onPrimary,
+    backgroundColor: lightMaterialTheme.colors.primary,
+  },
+
+  "table-array container": {
+    width: "100%",
+    gap: 5,
+  },
+  "table-array header row": {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: lightMaterialTheme.colors.primary,
+  },
+  "table-array data row": {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+  },
+  "table-array header cell": {},
+  "table-array cell": {
+    flex: 1,
+  },
+  "table-array cell boolean": {
+    maxWidth: 80,
+    alignItems: "center",
+  },
+  "table-array cell actions": {
+    maxWidth: 50,
+    alignItems: "center",
+  },
+  "table-array data cell string": {
+    flexDirection: "column",
+    alignItems: "stretch",
+  },
+  "table-array row": { gap: 10 },
+
+  debug1: {
+    borderColor: "#ff0",
+    borderWidth: 1,
+  },
+  "debug-label": {
+    left: 0,
+    right: 0,
+    padding: 2,
+    color: "black",
+    backgroundColor: "#ff09",
+  },
+});
+
+const darkStyledViewStylesheet = merge(
+  lightStyledViewStylesheet,
+  StyleSheet.create<Record<string, ViewStyle>>({
+    "category-label selected": {
+      color: darkMaterialTheme.colors.onPrimary,
+      backgroundColor: darkMaterialTheme.colors.primary,
+    },
+    "table-array header row": {
+      borderBottomColor: darkMaterialTheme.colors.primary,
+    },
+  }),
+);
+
+const lightStyledTextStylesheet = StyleSheet.create<Record<string, TextStyle>>({
+  "table-array header cell": {
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  "table-array header cell boolean": {
+    textAlign: "center",
+  },
+  "table-array header cell actions": {
+    textAlign: "center",
+  },
+  "horizontal-layout-item": { flex: 1 },
+  error: {
+    color: lightMaterialTheme?.colors?.error,
+  },
+  "category-label": {
+    margin: 10,
+  },
+  selected: {
+    color: lightMaterialTheme.colors?.onPrimary,
+  },
+
+  debug1: {
+    borderColor: "#ff0",
+    borderWidth: 1,
+  },
+  "debug-label": {
+    left: 0,
+    right: 0,
+    padding: 2,
+    color: "black",
+    backgroundColor: "#ff09",
+  },
+});
+
+const darkStyledTextStylesheet = merge(
+  lightStyledTextStylesheet,
+  StyleSheet.create<Record<string, TextStyle>>({
+    "table-array header cell": {},
+    "horizontal-layout-item": { flex: 1 },
+    error: {
+      color: darkMaterialTheme?.colors?.error,
+    },
+    selected: {
+      color: darkMaterialTheme.colors?.onPrimary,
+    },
+  }),
+);
+
 export const lightComponentTheme = createTheme({
   components: {
     StyledButton: {
       stylesheet: StyleSheet.create<Record<string, TextStyle>>({
         selected: {
-          color: lightMaterialTheme.colors?.background,
+          color: lightMaterialTheme.colors?.onPrimary,
           backgroundColor: lightMaterialTheme.colors?.primary,
-        },
-      }),
-    },
-    StyledText: {
-      stylesheet: StyleSheet.create<Record<string, TextStyle>>({
-        "horizontal-layout-item": { flex: 1 },
-        error: {
-          color: lightMaterialTheme?.colors?.error,
-        },
-        "category-label": {
-          padding: 10,
-        },
-        selected: {
-          color: lightMaterialTheme.colors?.background,
         },
       }),
       style: {
-        fontSize: 16,
+        color: lightMaterialTheme.colors?.background,
       },
     },
     StyledView: {
-      stylesheet: StyleSheet.create<Record<string, ViewStyle>>({
-        "pdf control": {
-          flexDirection: "row",
-          justifyContent: "space-between",
-          backgroundColor: "red",
-          color: "blue",
-        },
-        "array-container": {
-          flex: 1,
-          gap: 10,
-        },
-        "vertical-layout": {
-          flexDirection: "column",
-          gap: 10,
-        },
-        "horizontal-layout": {
-          flexDirection: "row",
-          gap: 10,
-        },
-        "group-layout": {
-          flexDirection: "column",
-          gap: 10,
-          padding: 10,
-          backgroundColor: "#99999933",
-          overflow: "hidden",
-          borderRadius: 10,
-        },
-        "horizontal-layout-item": { flex: 1 },
-        "category-list category-subcategories": {
-          flexDirection: "column",
-        },
-        categorization: { flexDirection: "column", gap: 10 },
-        "categorization-master": { flexDirection: "row" },
-        "categorization-detail": {
-          gap: 10,
-        },
-        "category-subcategories": {
-          flexDirection: "row",
-        },
-        "category-label": {
-          borderRadius: 10,
-        },
-        "category-label selected": {
-          color: lightMaterialTheme.colors?.inversePrimary,
-          backgroundColor: lightMaterialTheme.colors?.primary,
-        },
-      }),
+      stylesheet: lightStyledViewStylesheet,
+    },
+    StyledText: {
+      stylesheet: lightStyledTextStylesheet,
+      style: {
+        flexShrink: 1,
+        color: lightMaterialTheme.colors?.onBackground,
+        fontSize: 16,
+      },
+      numberOfLines: 2,
+    },
+    StyledInput: {
+      stylesheet: lightStyledTextStylesheet,
+      contentStyle: {
+        flex: 1,
+        fontSize: 16,
+      },
     },
   },
 });
@@ -107,36 +228,17 @@ export const darkComponentTheme = createTheme({
     StyledButton: {
       stylesheet: StyleSheet.create<Record<string, TextStyle>>({
         selected: {
-          color: darkMaterialTheme.colors?.background,
+          color: darkMaterialTheme.colors?.onPrimary,
           backgroundColor: darkMaterialTheme.colors?.primary,
         },
       }),
     },
     StyledText: {
-      stylesheet: StyleSheet.create<Record<string, TextStyle>>({
-        "horizontal-layout-item": { flex: 1 },
-        error: {
-          color: darkMaterialTheme?.colors?.error,
-        },
-        "category-label": {
-          padding: 10,
-        },
-        selected: {
-          color: darkMaterialTheme.colors?.background,
-        },
-      }),
-      style: {
-        color: "white",
-        fontSize: 16,
-      },
+      stylesheet: darkStyledTextStylesheet,
+      style: { color: darkMaterialTheme.colors?.onBackground },
     },
     StyledView: {
-      stylesheet: StyleSheet.create<Record<string, ViewStyle>>({
-        "category-label selected": {
-          color: darkMaterialTheme.colors?.inversePrimary,
-          backgroundColor: darkMaterialTheme.colors?.primary,
-        },
-      }),
+      stylesheet: darkStyledViewStylesheet,
     },
   },
 });
