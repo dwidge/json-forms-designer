@@ -15,16 +15,16 @@ export const mergeThemes = (
 
 declare module "@rneui/themed" {
   export interface ComponentTheme {
-    StyledButton: Partial<
+    StyledFormButton: Partial<
       React.ComponentProps<typeof Paper.Button> & WithClassNameProps<TextStyle>
     >;
-    StyledView: Partial<
+    StyledFormView: Partial<
       React.ComponentProps<typeof View> & WithClassNameProps<ViewStyle>
     >;
-    StyledText: Partial<
+    StyledFormText: Partial<
       React.ComponentProps<typeof Paper.Text> & WithClassNameProps<TextStyle>
     >;
-    StyledInput: Partial<
+    StyledFormInput: Partial<
       React.ComponentProps<typeof Paper.TextInput> &
         WithClassNameProps<TextStyle>
     >;
@@ -187,7 +187,7 @@ const darkStyledTextStylesheet = merge(
 
 export const lightComponentTheme = createTheme({
   components: {
-    StyledButton: {
+    StyledFormButton: {
       stylesheet: StyleSheet.create<Record<string, TextStyle>>({
         selected: {
           color: lightMaterialTheme.colors?.onPrimary,
@@ -198,10 +198,10 @@ export const lightComponentTheme = createTheme({
         color: lightMaterialTheme.colors?.background,
       },
     },
-    StyledView: {
+    StyledFormView: {
       stylesheet: lightStyledViewStylesheet,
     },
-    StyledText: {
+    StyledFormText: {
       stylesheet: lightStyledTextStylesheet,
       style: {
         flexShrink: 1,
@@ -210,7 +210,7 @@ export const lightComponentTheme = createTheme({
       },
       numberOfLines: 2,
     },
-    StyledInput: {
+    StyledFormInput: {
       stylesheet: lightStyledTextStylesheet,
       contentStyle: {
         flex: 1,
@@ -225,7 +225,7 @@ export const darkComponentTheme = createTheme({
   mode: "dark",
   components: {
     ...lightComponentTheme.components,
-    StyledButton: {
+    StyledFormButton: {
       stylesheet: StyleSheet.create<Record<string, TextStyle>>({
         selected: {
           color: darkMaterialTheme.colors?.onPrimary,
@@ -233,11 +233,11 @@ export const darkComponentTheme = createTheme({
         },
       }),
     },
-    StyledText: {
+    StyledFormText: {
       stylesheet: darkStyledTextStylesheet,
       style: { color: darkMaterialTheme.colors?.onBackground },
     },
-    StyledView: {
+    StyledFormView: {
       stylesheet: darkStyledViewStylesheet,
     },
   },
@@ -245,7 +245,7 @@ export const darkComponentTheme = createTheme({
 
 export const pdfComponentTheme = createTheme({
   components: {
-    StyledText: {
+    StyledFormText: {
       stylesheet: StyleSheet.create<Record<string, TextStyle>>({
         error: {
           color: lightMaterialTheme?.colors?.error,
@@ -265,7 +265,7 @@ export const pdfComponentTheme = createTheme({
       }),
       style: {},
     },
-    StyledView: {
+    StyledFormView: {
       stylesheet: StyleSheet.create<Record<string, ViewStyle>>({
         control: {
           flexDirection: "row",
