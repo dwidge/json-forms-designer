@@ -3,7 +3,7 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { ErrorFallback } from "@dwidge/fallback-rnw";
-import { Button } from "@dwidge/json-forms-paper";
+import { Button, Text, View } from "@dwidge/json-forms-paper";
 import ErrorBoundary from "react-native-error-boundary";
 import { JsonFormData } from "../../types/JsonFormData.js";
 // import { JsonFormPdfExportButton } from "./JsonFormPdf.js";
@@ -19,16 +19,50 @@ export const JsonFormsView = ({
   schema = defaultJsonSchemaObject,
   uischema = defaultUISchemaElementType,
   data: [data, setData] = useStateWithOptionalSetter<JsonFormData>({}),
+  onReset = setData
+    ? () => {
+        setData({});
+      }
+    : undefined,
+  editMode: [editMode, setEditMode] = useStateWithOptionalSetter<
+    "gui" | "json"
+  >("gui"),
 }) => (
   <>
+    {setEditMode && (
+      <View
+        style={{
+          gap: 10,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Button
+          onPress={() => setEditMode("gui")}
+          className={editMode === "gui" ? "selected" : ""}
+        >
+          GUI
+        </Button>
+        <Button
+          onPress={() => setEditMode("json")}
+          className={editMode === "json" ? "selected" : ""}
+        >
+          JSON
+        </Button>
+      </View>
+    )}
     {/* <JsonFormPdfExportButton {...{ schema, uischema, data }} /> */}
+    {onReset && <Button onPress={onReset}>Reset</Button>}
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <JsonFormView
-        schema={schema}
-        uischema={uischema}
-        data={[data, setData]}
-      />
+      {editMode === "json" ? (
+        <Text>{JSON.stringify(data, null, 2)}</Text>
+      ) : (
+        <JsonFormView
+          schema={schema}
+          uischema={uischema}
+          data={[data, setData]}
+        />
+      )}
     </ErrorBoundary>
-    {setData && <Button onPress={() => setData({})}>Reset</Button>}
   </>
 );
