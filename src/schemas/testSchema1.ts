@@ -2,11 +2,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { UISchemaElementType } from "../types/index.js";
-import { JsonSchemaObject } from "../types/JSONSchema.js";
+import { JsonSchemaStandard, UISchemaElementType } from "../types/index.js";
 
 export const testSchema1: {
-  jsonSchema: JsonSchemaObject;
+  jsonSchema: JsonSchemaStandard;
   uiSchema: UISchemaElementType;
 } = {
   jsonSchema: {

@@ -12,8 +12,8 @@ import {
   convertStringToFormSchema,
   defaultFormSchema,
   defaultFormSchemaString,
-} from "./FormSchema.js";
-import { JsonFormsDesigner } from "./jsonforms/JsonFormsDesigner.js";
+} from "../types/FormSchema.js";
+import { DesignerEdit } from "./jsonforms/DesignerEdit.js";
 
 export const FormDesigner = ({
   schemaString: [
@@ -24,11 +24,11 @@ export const FormDesigner = ({
     defaultFormSchema,
     [schemaString, setSchemaString],
     convertStringToFormSchema,
-    convertFormSchemaToString
+    convertFormSchemaToString,
   ),
 }) => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <JsonFormsDesigner
+    <DesignerEdit
       schema={[
         schema.schema,
         setSchema &&
@@ -36,7 +36,7 @@ export const FormDesigner = ({
             setSchema((prev) =>
               typeof schema === "function"
                 ? { ...prev, schema: schema(prev.schema) }
-                : { ...prev, schema }
+                : { ...prev, schema },
             )),
       ]}
       uischema={[

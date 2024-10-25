@@ -6,23 +6,31 @@ import { ErrorFallback } from "@dwidge/fallback-rnw";
 import { Button, TextInput, View } from "@dwidge/json-forms-paper";
 import React, { useState } from "react";
 import ErrorBoundary from "react-native-error-boundary";
-import {
-  defaultJsonSchemaObject,
-  defaultJsonSchemaObjectWithPropertyArray,
-  JsonSchemaObject,
-} from "../../types/index.js";
-import {
-  convertPropertiesArrayToPropertiesObjectRecursively,
-  convertPropertiesObjectToPropertiesArrayRecursively,
-} from "../../types/convertProperties.js";
 import { useBufferedState } from "../../utils/useBufferedState.js";
 import { useSyncedState } from "../../utils/useSyncedState.js";
-import { JsonSchemaEdit } from "./JsonSchemaEdit.js";
 import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
+import {
+  convertJsonSchemaStandardToString,
+  convertStringToJsonSchemaStandard,
+  defaultJsonSchemaStandard,
+  JsonSchemaStandard,
+} from "../../types/jsonSchema/JsonSchemaStandard.js";
+import { defaultJsonSchemaCustom } from "../../types/jsonSchema/JsonSchemaCustom.js";
+import { paperCells, paperRenderers } from "@dwidge/json-forms-paper";
+import { JsonForms } from "@jsonforms/react";
+import {
+  editingSchema,
+  jsonschemaUischema,
+} from "../../schemas/jsonschemaSchema.js";
+import {
+  convertJsonSchemaCustomToStandard,
+  convertJsonSchemaStandardToCustom,
+  JsonSchemaCustom,
+} from "../../types/index.js";
 
-export const JsonFormsData = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaObject>(
-    defaultJsonSchemaObject
+export const SchemaEdit = ({
+  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+    defaultJsonSchemaStandard,
   ),
   editMode: [editMode, setEditMode] = useState<"json" | "gui">("gui"),
 }) => (
@@ -43,23 +51,23 @@ export const JsonFormsData = ({
     </View>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       {editMode === "json" ? (
-        <JsonFormsDataJson schema={[schema, setSchema]} />
+        <SchemaJsonEdit schema={[schema, setSchema]} />
       ) : (
-        <JsonFormsDataGui schema={[schema, setSchema]} />
+        <SchemaGuiEdit schema={[schema, setSchema]} />
       )}
     </ErrorBoundary>
   </>
 );
 
-export const JsonFormsDataGui = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaObject>(
-    defaultJsonSchemaObject
+const SchemaGuiEdit = ({
+  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+    defaultJsonSchemaStandard,
   ),
   editSchema: [editSchema, setEditSchema, error] = useSyncedState(
-    defaultJsonSchemaObjectWithPropertyArray,
+    defaultJsonSchemaCustom,
     [schema, setSchema],
-    convertPropertiesObjectToPropertiesArrayRecursively,
-    convertPropertiesArrayToPropertiesObjectRecursively
+    convertJsonSchemaStandardToCustom,
+    convertJsonSchemaCustomToStandard,
   ),
   bufferedSchema: [
     bufferedSchema,
@@ -72,10 +80,8 @@ export const JsonFormsDataGui = ({
   <>
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Button
-        disabled={bufferedSchema === defaultJsonSchemaObjectWithPropertyArray}
-        onPress={() =>
-          setBufferedSchema(defaultJsonSchemaObjectWithPropertyArray)
-        }
+        disabled={bufferedSchema === defaultJsonSchemaCustom}
+        onPress={() => setBufferedSchema(defaultJsonSchemaCustom)}
       >
         Clear
       </Button>
@@ -87,20 +93,15 @@ export const JsonFormsDataGui = ({
       </Button>
     </View>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <JsonSchemaEdit jsonschema={[bufferedSchema, setBufferedSchema]} />
+      <SchemaGui jsonschema={[bufferedSchema, setBufferedSchema]} />
       {error && <ErrorFallback error={error} />}
     </ErrorBoundary>
   </>
 );
 
-const convertStringToJsonSchemaObject = (s: string): JsonSchemaObject =>
-  JsonSchemaObject.parse(JSON.parse(s));
-const convertJsonSchemaObjectToString = (o: JsonSchemaObject): string =>
-  JSON.stringify(o, null, 2);
-
-export const JsonFormsDataJson = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaObject>(
-    defaultJsonSchemaObject
+const SchemaJsonEdit = ({
+  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+    defaultJsonSchemaStandard,
   ),
   bufferedSchema: [
     bufferedSchema,
@@ -112,20 +113,20 @@ export const JsonFormsDataJson = ({
   editSchema: [editSchema, setEditSchema, error] = useSyncedState(
     "",
     [bufferedSchema, setBufferedSchema],
-    convertJsonSchemaObjectToString,
-    convertStringToJsonSchemaObject
+    convertJsonSchemaStandardToString,
+    convertStringToJsonSchemaStandard,
   ),
   debouncedSchema: [debouncedSchema, setDebouncedSchema] = useBufferedState(
     [editSchema, setEditSchema],
     true,
-    1500
+    1500,
   ),
 }) => (
   <>
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Button
-        disabled={bufferedSchema === defaultJsonSchemaObject}
-        onPress={() => setBufferedSchema(defaultJsonSchemaObject)}
+        disabled={bufferedSchema === defaultJsonSchemaStandard}
+        onPress={() => setBufferedSchema(defaultJsonSchemaStandard)}
       >
         Clear
       </Button>
@@ -147,4 +148,25 @@ export const JsonFormsDataJson = ({
       {error && <ErrorFallback error={error} />}
     </ErrorBoundary>
   </>
+);
+
+const SchemaGui = ({
+  jsonschema: [jsonschema, setSchema] = useState<JsonSchemaCustom>(
+    defaultJsonSchemaCustom,
+  ),
+}) => (
+  <JsonForms
+    renderers={paperRenderers}
+    cells={paperCells}
+    schema={editingSchema}
+    uischema={jsonschemaUischema}
+    uischemas={[
+      {
+        tester: (schema) => (schema && schema.type === "object" ? 2 : -1),
+        uischema: jsonschemaUischema,
+      },
+    ]}
+    data={jsonschema}
+    onChange={({ data }) => setSchema(data)}
+  />
 );

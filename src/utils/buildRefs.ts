@@ -2,7 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { JsonSchemaObject } from "../types/index.js";
+import { JsonSchemaStandard } from "../types/index.js";
 
 /**
  * Builds a list of refs for a schema, traversing recursively through properties and handling nested arrays.
@@ -11,8 +11,8 @@ import { JsonSchemaObject } from "../types/index.js";
  * @returns A list of ref strings.
  */
 export const buildRefs = (
-  schema: JsonSchemaObject,
-  basePath: string = "#"
+  schema: JsonSchemaStandard,
+  basePath: string = "#",
 ): string[] =>
   Object.entries(schema.properties ?? {}).flatMap(
     ([k, p], _i, _a, currentPath = `${basePath}/properties/${k}`) => [
@@ -22,5 +22,5 @@ export const buildRefs = (
         : p.type === "array" && p.items
           ? buildRefs(p.items, currentPath)
           : []),
-    ]
+    ],
   ) ?? [];

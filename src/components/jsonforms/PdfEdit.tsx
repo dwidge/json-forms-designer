@@ -12,7 +12,7 @@
 // import { AnyUISchemaElement } from "../types/AnyUISchemaElement.js";
 // import { JsonFormData } from "../types/JsonFormData.js";
 // import { pdfComponentTheme } from "../themes/componentThemes.js";
-// import { convertJsonSchemaArrayToJsonSchemaObject, JsonSchemaArray } from "../types/JsonSchemaForm.js";
+// import { convertJsonSchemaArrayToJsonSchemaStandard, JsonSchemaArray } from "../types/JsonSchemaForm.js";
 
 // export const PdfThemeContext = createContext(pdfComponentTheme);
 
@@ -107,7 +107,7 @@
 //   <JsonForms
 //     renderers={pdfRenderers}
 //     cells={pdfCells}
-//     schema={convertJsonSchemaArrayToJsonSchemaObject({
+//     schema={convertJsonSchemaArrayToJsonSchemaStandard({
 //       type: "object",
 //       properties: schema,
 //     })}

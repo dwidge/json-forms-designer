@@ -9,14 +9,15 @@ import { JsonFormData } from "../../types/JsonFormData.js";
 // import { JsonFormPdfExportButton } from "./JsonFormPdf.js";
 import React from "react";
 import {
-  defaultJsonSchemaObject,
+  defaultJsonSchemaStandard,
   defaultUISchemaElementType,
 } from "../../types/index.js";
 import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
-import { JsonFormView } from "./JsonFormView.js";
+import { paperCells, paperRenderers } from "@dwidge/json-forms-paper";
+import { JsonForms } from "@jsonforms/react";
 
-export const JsonFormsView = ({
-  schema = defaultJsonSchemaObject,
+export const FormEdit = ({
+  schema = defaultJsonSchemaStandard,
   uischema = defaultUISchemaElementType,
   data: [data, setData] = useStateWithOptionalSetter<JsonFormData>({}),
   onReset = setData
@@ -55,14 +56,31 @@ export const JsonFormsView = ({
     {onReset && <Button onPress={onReset}>Reset</Button>}
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       {editMode === "json" ? (
-        <Text>{JSON.stringify(data, null, 2)}</Text>
+        <FormJson schema={schema} uischema={uischema} data={[data, setData]} />
       ) : (
-        <JsonFormView
-          schema={schema}
-          uischema={uischema}
-          data={[data, setData]}
-        />
+        <FormGui schema={schema} uischema={uischema} data={[data, setData]} />
       )}
     </ErrorBoundary>
   </>
 );
+
+const FormGui = ({
+  schema = defaultJsonSchemaStandard,
+  uischema = defaultUISchemaElementType,
+  data: [data, setData] = useStateWithOptionalSetter({}),
+}) => (
+  <JsonForms
+    renderers={paperRenderers}
+    cells={paperCells}
+    schema={schema}
+    uischema={uischema}
+    data={data}
+    onChange={setData && (({ data }) => setData(data))}
+  />
+);
+
+const FormJson = ({
+  schema = defaultJsonSchemaStandard,
+  uischema = defaultUISchemaElementType,
+  data: [data, setData] = useStateWithOptionalSetter({}),
+}) => <Text>{JSON.stringify(data, null, 2)}</Text>;

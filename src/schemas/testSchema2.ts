@@ -4,8 +4,7 @@
 
 import { UISchemaElement } from "@jsonforms/core";
 import { JSONSchemaType } from "ajv";
-import { UISchemaElementType } from "../types/index.js";
-import { JsonSchemaObject } from "../types/JSONSchema.js";
+import { JsonSchemaStandard, UISchemaElementType } from "../types/index.js";
 
 export interface TestSchema {
   title: string;
@@ -27,7 +26,7 @@ export interface Details {
 }
 
 export const testSchema2: {
-  jsonSchema: JsonSchemaObject;
+  jsonSchema: JsonSchemaStandard;
   uiSchema: UISchemaElement;
 } = {
   jsonSchema: {

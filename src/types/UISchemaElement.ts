@@ -170,3 +170,8 @@ export type UISchemaElementType = z.infer<typeof UISchemaElement>;
 export const defaultUISchemaElementType: UISchemaElementType = {
   type: "VerticalLayout",
 };
+
+export const convertUiSchemaToString = (s: UISchemaElementType): string =>
+  JSON.stringify(s, null, 2);
+export const convertStringToUiSchema = (s: string): UISchemaElementType =>
+  UISchemaElementType.parse(JSON.parse(s));

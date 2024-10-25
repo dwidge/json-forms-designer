@@ -3,10 +3,7 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { Rule, UISchemaElement } from "@jsonforms/core";
-import {
-  defaultJsonSchemaObject,
-  JsonSchemaObject,
-} from "../types/JSONSchema.js";
+import { defaultJsonSchemaStandard, JsonSchemaStandard } from "../types";
 
 export const property = {
   type: "object",
@@ -78,8 +75,8 @@ export const property = {
   },
   required: ["type"],
   additionalProperties: false,
-  default: defaultJsonSchemaObject,
-} as JsonSchemaObject;
+  default: defaultJsonSchemaStandard,
+} as JsonSchemaStandard;
 
 export const editingProperty = {
   type: "object",
@@ -97,21 +94,21 @@ export const editingProperty = {
   },
   required: ["type"],
   additionalProperties: false,
-} as JsonSchemaObject;
+} as JsonSchemaStandard;
 
 export const jsonschemaSchema = {
   ...property,
   definitions: {
     property,
   },
-} as JsonSchemaObject;
+} as JsonSchemaStandard;
 
 export const editingSchema = {
   ...editingProperty,
   definitions: {
     property: editingProperty,
   },
-} as JsonSchemaObject;
+} as JsonSchemaStandard;
 
 const stringRule = {
   effect: "SHOW",

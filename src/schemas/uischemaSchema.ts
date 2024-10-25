@@ -7,7 +7,7 @@ import {
   SchemaBasedCondition,
   UISchemaElement,
 } from "@jsonforms/core";
-import { JsonSchemaObject } from "../types/JSONSchema.js";
+import { JsonSchemaStandard } from "../types";
 
 const uiproperty = {
   type: "object",
@@ -70,14 +70,14 @@ const uiproperty = {
     },
   },
   required: ["type"],
-} satisfies JsonSchemaObject;
+} satisfies JsonSchemaStandard;
 
 export const uischemaSchema = {
   ...uiproperty,
   definitions: {
     property: uiproperty,
   },
-} satisfies JsonSchemaObject;
+} satisfies JsonSchemaStandard;
 
 export const uischemaUischema = {
   type: "VerticalLayout",

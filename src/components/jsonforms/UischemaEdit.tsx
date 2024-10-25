@@ -3,31 +3,45 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { ErrorFallback } from "@dwidge/fallback-rnw";
-import { Button, TextInput, View } from "@dwidge/json-forms-paper";
+import {
+  Button,
+  paperCells,
+  paperRenderers,
+  TextInput,
+  View,
+} from "@dwidge/json-forms-paper";
+import { JsonForms } from "@jsonforms/react";
 import React from "react";
 import ErrorBoundary from "react-native-error-boundary";
 import {
-  defaultJsonSchemaObject,
+  uischemaSchema,
+  uischemaUischema,
+} from "../../schemas/uischemaSchema.js";
+import {
+  convertStringToUiSchema,
+  convertUiSchemaToString,
   defaultUISchemaElementType,
-  JsonSchemaObject,
   UISchemaElementType,
 } from "../../types/index.js";
+import {
+  defaultJsonSchemaStandard,
+  JsonSchemaStandard,
+} from "../../types/jsonSchema/JsonSchemaStandard.js";
+import { buildRefs } from "../../utils/buildRefs.js";
+import { deepMerge } from "../../utils/deepMerge.js";
 import { useBufferedState } from "../../utils/useBufferedState.js";
 import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
 import { useSyncedState } from "../../utils/useSyncedState.js";
-import { UiSchemaEdit } from "./UiSchemaEdit.js";
 
-const identityFunction = <T,>(x: T) => x;
-
-export const JsonFormsLayout = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaObject>(
-    defaultJsonSchemaObject
+export const UischemaEdit = ({
+  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+    defaultJsonSchemaStandard,
   ),
   uischema: [
     uischema,
     setUischema,
   ] = useStateWithOptionalSetter<UISchemaElementType>(
-    defaultUISchemaElementType
+    defaultUISchemaElementType,
   ),
   editMode: [editMode, setEditMode] = useStateWithOptionalSetter<
     "json" | "gui"
@@ -50,9 +64,9 @@ export const JsonFormsLayout = ({
     </View>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       {editMode === "json" ? (
-        <JsonFormsLayoutJson uischema={[uischema, setUischema]} />
+        <UischemaJsonEdit uischema={[uischema, setUischema]} />
       ) : (
-        <JsonFormsLayoutGui
+        <UischemaGuiEdit
           schema={[schema, setSchema]}
           uischema={[uischema, setUischema]}
         />
@@ -61,21 +75,23 @@ export const JsonFormsLayout = ({
   </>
 );
 
-export const JsonFormsLayoutGui = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaObject>(
-    defaultJsonSchemaObject
+const identityFunction = <T,>(x: T) => x;
+
+const UischemaGuiEdit = ({
+  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+    defaultJsonSchemaStandard,
   ),
   uischema: [
     uischema,
     setUischema,
   ] = useStateWithOptionalSetter<UISchemaElementType>(
-    defaultUISchemaElementType
+    defaultUISchemaElementType,
   ),
   editUiSchema: [editUiSchema, setEditUiSchema, error] = useSyncedState(
     defaultUISchemaElementType,
     [uischema, setUischema],
     identityFunction,
-    identityFunction
+    identityFunction,
   ),
   bufferedUiSchema: [
     bufferedUiSchema,
@@ -101,7 +117,7 @@ export const JsonFormsLayoutGui = ({
       </Button>
     </View>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <UiSchemaEdit
+      <UischemaGui
         jsonschema={[schema, setSchema]}
         uischema={[bufferedUiSchema, setBufferedUiSchema]}
       />
@@ -110,17 +126,12 @@ export const JsonFormsLayoutGui = ({
   </>
 );
 
-const convertUiSchemaToString = (s: UISchemaElementType): string =>
-  JSON.stringify(s, null, 2);
-const convertStringToUiSchema = (s: string): UISchemaElementType =>
-  UISchemaElementType.parse(JSON.parse(s));
-
-export const JsonFormsLayoutJson = ({
+const UischemaJsonEdit = ({
   uischema: [
     uischema,
     setUischema,
   ] = useStateWithOptionalSetter<UISchemaElementType>(
-    defaultUISchemaElementType
+    defaultUISchemaElementType,
   ),
   bufferedUiSchema: [
     bufferedUiSchema,
@@ -133,7 +144,7 @@ export const JsonFormsLayoutJson = ({
     "",
     [bufferedUiSchema, setBufferedUiSchema],
     convertUiSchemaToString,
-    convertStringToUiSchema
+    convertStringToUiSchema,
   ),
   debouncedUiSchema: [
     debouncedUiSchema,
@@ -166,4 +177,50 @@ export const JsonFormsLayoutJson = ({
       {error && <ErrorFallback error={error} />}
     </ErrorBoundary>
   </>
+);
+
+const addScopesEnum = (scopes: string[]) =>
+  deepMerge(uischemaSchema, {
+    definitions: {
+      property: {
+        properties: {
+          scope: {
+            enum: scopes.length ? scopes : undefined,
+          },
+        },
+      },
+    },
+    properties: {
+      scope: {
+        enum: scopes.length ? scopes : undefined,
+      },
+    },
+  });
+
+const UischemaGui = ({
+  jsonschema: [jsonschema] = useStateWithOptionalSetter<JsonSchemaStandard>({
+    type: "object",
+  }),
+  uischema: [
+    uischema,
+    setUischema,
+  ] = useStateWithOptionalSetter<UISchemaElementType>(
+    defaultUISchemaElementType,
+  ),
+  scopes = ["#", ...buildRefs(jsonschema)],
+}) => (
+  <JsonForms
+    renderers={paperRenderers}
+    cells={paperCells}
+    schema={addScopesEnum(scopes)}
+    uischema={uischemaUischema}
+    uischemas={[
+      {
+        tester: (schema) => (schema && schema.type === "object" ? 2 : -1),
+        uischema: uischemaUischema,
+      },
+    ]}
+    data={uischema}
+    onChange={setUischema && (({ data }) => setUischema(data))}
+  />
 );

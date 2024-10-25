@@ -1,4 +1,4 @@
-// export * from "./JsonFormPdf.js";
-export * from "./JsonFormsDesigner.js";
-export * from "./JsonFormsEdit.js";
-export * from "./JsonFormsView.js";
+export * from "./DesignerEdit.js";
+export * from "./FormEdit.js";
+export * from "./SchemaEdit.js";
+export * from "./UischemaEdit.js";

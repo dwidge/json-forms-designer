@@ -19,34 +19,34 @@ import {
   convertStringToFormSchema,
   defaultFormSchema,
   defaultFormSchemaString,
-} from "./FormSchema.js";
-import { JsonFormsView } from "./jsonforms/JsonFormsView.js";
+} from "../types/FormSchema.js";
+import { FormEdit } from "./jsonforms/FormEdit.js";
 
 export const FormSubmit = ({
   schemaString: [
     schemaString,
     setSchemaString,
   ] = useStateWithOptionalSetter<string>(
-    defaultFormSchemaString
+    defaultFormSchemaString,
   ) as State<string>,
   schema: [schema, setSchema, schemaError] = useSyncedState(
     defaultFormSchema,
     [schemaString, setSchemaString],
     convertStringToFormSchema,
-    convertFormSchemaToString
+    convertFormSchemaToString,
   ),
   dataString: [dataString, setDataString] = useStateWithOptionalSetter<string>(
-    defaultJsonFormDataString
+    defaultJsonFormDataString,
   ),
   data: [data, setData, dataError] = useSyncedState(
     defaultJsonFormData,
     [dataString, setDataString],
     convertStringToJsonFormData,
-    convertJsonFormDataToString
+    convertJsonFormDataToString,
   ),
 }) => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <JsonFormsView
+    <FormEdit
       schema={schema.schema}
       uischema={schema.uischema}
       data={[data, setData]}
