@@ -47,10 +47,6 @@ const lightStyledViewStylesheet = StyleSheet.create<Record<string, ViewStyle>>({
   "group-layout": {
     flexDirection: "column",
     gap: 10,
-    padding: 10,
-    backgroundColor: "#99999933",
-    overflow: "hidden",
-    borderRadius: 10,
   },
   "horizontal-layout-item": { flex: 1 },
   "category-list category-subcategories": {
@@ -71,6 +67,7 @@ const lightStyledViewStylesheet = StyleSheet.create<Record<string, ViewStyle>>({
     borderWidth: 1,
     maxWidth: "100%",
     borderRadius: 10,
+    overflow: "hidden",
     borderColor: lightMaterialTheme.colors?.inversePrimary,
   },
   "category-label selected": {
@@ -109,6 +106,42 @@ const lightStyledViewStylesheet = StyleSheet.create<Record<string, ViewStyle>>({
     alignItems: "stretch",
   },
   "table-array row": { gap: 10 },
+
+  "control-array item-controls": {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: -10,
+  },
+  "control-array item-controls add": {
+    alignSelf: "flex-end",
+    height: 0,
+    zIndex: 2,
+  },
+  "control-array container": {
+    flexDirection: "column",
+    gap: 10,
+  },
+  "control-array items": {
+    flexDirection: "column",
+    gap: 5,
+  },
+  "control-array item": {
+    flexDirection: "row",
+    gap: 10,
+  },
+  "control-array item-render": {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: -10,
+    backgroundColor: "#99999922",
+    overflow: "hidden",
+    borderRadius: 10,
+    alignContent: "center",
+    justifyContent: "center",
+  },
+
+  "label-error": { flexDirection: "row", gap: 10 },
 
   debug1: {
     borderColor: "#ff0",
@@ -174,8 +207,6 @@ const lightStyledTextStylesheet = StyleSheet.create<Record<string, TextStyle>>({
 const darkStyledTextStylesheet = merge(
   lightStyledTextStylesheet,
   StyleSheet.create<Record<string, TextStyle>>({
-    "table-array header cell": {},
-    "horizontal-layout-item": { flex: 1 },
     error: {
       color: darkMaterialTheme?.colors?.error,
     },
@@ -196,6 +227,7 @@ export const lightComponentTheme = createTheme({
       }),
       style: {
         color: lightMaterialTheme.colors?.background,
+        margin: 0,
       },
     },
     StyledFormView: {
@@ -207,8 +239,9 @@ export const lightComponentTheme = createTheme({
         flexShrink: 1,
         color: lightMaterialTheme.colors?.onBackground,
         fontSize: 16,
+        pointerEvents: "none",
+        userSelect: "none",
       },
-      numberOfLines: 2,
     },
     StyledFormInput: {
       stylesheet: lightStyledTextStylesheet,
@@ -220,28 +253,33 @@ export const lightComponentTheme = createTheme({
   },
 });
 
-export const darkComponentTheme = createTheme({
-  ...lightComponentTheme,
-  mode: "dark",
-  components: {
-    ...lightComponentTheme.components,
-    StyledFormButton: {
-      stylesheet: StyleSheet.create<Record<string, TextStyle>>({
-        selected: {
-          color: darkMaterialTheme.colors?.onPrimary,
-          backgroundColor: darkMaterialTheme.colors?.primary,
+export const darkComponentTheme = merge(
+  lightComponentTheme,
+  createTheme({
+    mode: "dark",
+    components: {
+      // ...lightComponentTheme.components,
+      StyledFormButton: merge(
+        lightComponentTheme.components?.StyledFormButton ?? {},
+        {
+          stylesheet: StyleSheet.create<Record<string, TextStyle>>({
+            selected: {
+              color: darkMaterialTheme.colors?.onPrimary,
+              backgroundColor: darkMaterialTheme.colors?.primary,
+            },
+          }),
         },
-      }),
+      ),
+      StyledFormText: {
+        stylesheet: darkStyledTextStylesheet,
+        style: { color: darkMaterialTheme.colors?.onBackground },
+      },
+      StyledFormView: {
+        stylesheet: darkStyledViewStylesheet,
+      },
     },
-    StyledFormText: {
-      stylesheet: darkStyledTextStylesheet,
-      style: { color: darkMaterialTheme.colors?.onBackground },
-    },
-    StyledFormView: {
-      stylesheet: darkStyledViewStylesheet,
-    },
-  },
-});
+  }),
+);
 
 export const pdfComponentTheme = createTheme({
   components: {

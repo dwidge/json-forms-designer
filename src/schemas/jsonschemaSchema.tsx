@@ -197,11 +197,14 @@ export const jsonschemaUischema = {
       type: "Control",
       scope: "#/properties/properties",
       rule: objectRule,
+      options: { summary: { type: "Control", scope: "#/properties/title" } },
     },
     {
       type: "Control",
       scope: "#/properties/items",
       rule: arrayRule,
+      options: { summary: { type: "Control", scope: "#/properties/title" } },
     },
   ],
+  options: { summary: { type: "Control", scope: "#/properties/title" } },
 } as UISchemaElement;

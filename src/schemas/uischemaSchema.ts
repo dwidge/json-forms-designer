@@ -115,6 +115,7 @@ export const uischemaUischema = {
     {
       type: "Control",
       scope: "#/properties/elements",
+      options: { summary: { type: "Control", scope: "#/properties/label" } },
       rule: {
         effect: RuleEffect.SHOW,
         condition: {
