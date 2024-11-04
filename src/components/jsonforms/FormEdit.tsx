@@ -7,27 +7,25 @@ import { Button, Text, View } from "@dwidge/json-forms-paper";
 import ErrorBoundary from "react-native-error-boundary";
 import { JsonFormData } from "../../types/JsonFormData.js";
 // import { JsonFormPdfExportButton } from "./JsonFormPdf.js";
+import { useOptionalState } from "@dwidge/hooks-react";
+import { paperCells, paperRenderers } from "@dwidge/json-forms-paper";
+import { JsonForms } from "@jsonforms/react";
 import React from "react";
 import {
   defaultJsonSchemaStandard,
   defaultUISchemaElementType,
 } from "../../types/index.js";
-import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
-import { paperCells, paperRenderers } from "@dwidge/json-forms-paper";
-import { JsonForms } from "@jsonforms/react";
 
 export const FormEdit = ({
   schema = defaultJsonSchemaStandard,
   uischema = defaultUISchemaElementType,
-  data: [data, setData] = useStateWithOptionalSetter<JsonFormData>({}),
+  data: [data, setData] = useOptionalState<JsonFormData>({}),
   onReset = setData
     ? () => {
         setData({});
       }
     : undefined,
-  editMode: [editMode, setEditMode] = useStateWithOptionalSetter<
-    "gui" | "json"
-  >("gui"),
+  editMode: [editMode, setEditMode] = useOptionalState<"gui" | "json">("gui"),
 }) => (
   <>
     {setEditMode && (
@@ -67,7 +65,7 @@ export const FormEdit = ({
 const FormGui = ({
   schema = defaultJsonSchemaStandard,
   uischema = defaultUISchemaElementType,
-  data: [data, setData] = useStateWithOptionalSetter({}),
+  data: [data, setData] = useOptionalState({}),
 }) => (
   <JsonForms
     renderers={paperRenderers}
@@ -82,5 +80,5 @@ const FormGui = ({
 const FormJson = ({
   schema = defaultJsonSchemaStandard,
   uischema = defaultUISchemaElementType,
-  data: [data, setData] = useStateWithOptionalSetter({}),
+  data: [data, setData] = useOptionalState({}),
 }) => <Text>{JSON.stringify(data, null, 2)}</Text>;

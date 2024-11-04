@@ -3,10 +3,10 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { ErrorFallback } from "@dwidge/fallback-rnw";
+import { useOptionalState, useSyncedState } from "@dwidge/hooks-react";
 import React from "react";
 import ErrorBoundary from "react-native-error-boundary";
-import { useStateWithOptionalSetter } from "../utils/useStateWithOptionalSetter.js";
-import { useSyncedState } from "../utils/useSyncedState.js";
+import { FormThemeProvider } from "../themes/FormThemeProvider.js";
 import {
   convertFormSchemaToString,
   convertStringToFormSchema,
@@ -16,10 +16,9 @@ import {
 import { DesignerEdit } from "./jsonforms/DesignerEdit.js";
 
 export const FormDesigner = ({
-  schemaString: [
-    schemaString,
-    setSchemaString,
-  ] = useStateWithOptionalSetter<string>(defaultFormSchemaString),
+  schemaString: [schemaString, setSchemaString] = useOptionalState<string>(
+    defaultFormSchemaString,
+  ),
   schema: [schema, setSchema, error] = useSyncedState(
     defaultFormSchema,
     [schemaString, setSchemaString],
@@ -27,24 +26,26 @@ export const FormDesigner = ({
     convertFormSchemaToString,
   ),
 }) => (
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <DesignerEdit
-      schema={[
-        schema.schema,
-        setSchema &&
-          ((schema) =>
-            setSchema((prev) =>
-              typeof schema === "function"
-                ? { ...prev, schema: schema(prev.schema) }
-                : { ...prev, schema },
-            )),
-      ]}
-      uischema={[
-        schema.uischema,
-        setSchema &&
-          ((uischema) => setSchema((prev) => ({ ...prev, uischema }))),
-      ]}
-    />
-    {error && <ErrorFallback error={error} />}
-  </ErrorBoundary>
+  <FormThemeProvider>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <DesignerEdit
+        schema={[
+          schema?.schema,
+          setSchema &&
+            ((schema) =>
+              setSchema((prev) =>
+                typeof schema === "function"
+                  ? { ...prev, schema: schema(prev.schema) }
+                  : { ...prev, schema },
+              )),
+        ]}
+        uischema={[
+          schema?.uischema,
+          setSchema &&
+            ((uischema) => setSchema((prev) => ({ ...prev, uischema }))),
+        ]}
+      />
+      {error && <ErrorFallback error={error} />}
+    </ErrorBoundary>
+  </FormThemeProvider>
 );

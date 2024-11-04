@@ -3,8 +3,11 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import z from "zod";
-import { defaultUISchemaElementType, UISchemaElementType } from "./index.js";
 import { JsonSchemaStandard } from "./jsonSchema/JsonSchemaStandard.js";
+import {
+  defaultUISchemaElementType,
+  UISchemaElementType,
+} from "./UISchemaElement.js";
 
 export const FormSchema = z.object({
   schema: JsonSchemaStandard,

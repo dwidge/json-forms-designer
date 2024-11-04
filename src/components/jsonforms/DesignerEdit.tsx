@@ -2,24 +2,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
+import { useOptionalState } from "@dwidge/hooks-react";
 import { Button, View } from "@dwidge/json-forms-paper";
 import React, { useState } from "react";
 import { testSchema1 } from "../../schemas/testSchema1.js";
 import { JsonSchemaStandard, UISchemaElementType } from "../../types/index.js";
 import { JsonFormData } from "../../types/JsonFormData.js";
-import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
-import { SchemaEdit } from "./SchemaEdit.js";
 import { FormEdit } from "./FormEdit.js";
+import { SchemaEdit } from "./SchemaEdit.js";
 import { UischemaEdit } from "./UischemaEdit.js";
 
 export const DesignerEdit = ({
-  schema = useStateWithOptionalSetter<JsonSchemaStandard>(
-    testSchema1.jsonSchema,
-  ),
-  uischema = useStateWithOptionalSetter<UISchemaElementType>(
-    () => testSchema1.uiSchema,
-  ),
-  data: [data, setData] = useStateWithOptionalSetter<JsonFormData>({}),
+  schema = useOptionalState<JsonSchemaStandard>(testSchema1.jsonSchema),
+  uischema = useOptionalState<UISchemaElementType>(() => testSchema1.uiSchema),
+  data: [data, setData] = useOptionalState<JsonFormData>({}),
   editMode: [editMode, setEditMode] = useState<
     "preview" | "uischema" | "schema"
   >("preview"),

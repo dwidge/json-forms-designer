@@ -1,1 +1,1 @@
-export * from "./useMemoState.js";
+export * from "./deepMerge.js";

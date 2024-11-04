@@ -54,7 +54,7 @@ export const JsonSchemaStandard = z.object({
     ])
     .optional(),
   default: z
-    .union([z.string(), z.number(), z.boolean(), z.object({})])
+    .union([z.string(), z.number(), z.boolean(), z.object({}), z.null()])
     .optional(),
   examples: z
     .array(

@@ -4,6 +4,11 @@
 
 import { ErrorFallback } from "@dwidge/fallback-rnw";
 import {
+  useOptionalState,
+  useSaveState,
+  useSyncedState,
+} from "@dwidge/hooks-react";
+import {
   Button,
   paperCells,
   paperRenderers,
@@ -29,23 +34,15 @@ import {
 } from "../../types/jsonSchema/JsonSchemaStandard.js";
 import { buildRefs } from "../../utils/buildRefs.js";
 import { deepMerge } from "../../utils/deepMerge.js";
-import { useBufferedState } from "../../utils/useBufferedState.js";
-import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
-import { useSyncedState } from "../../utils/useSyncedState.js";
 
 export const UischemaEdit = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+  schema: [schema, setSchema] = useOptionalState<JsonSchemaStandard>(
     defaultJsonSchemaStandard,
   ),
-  uischema: [
-    uischema,
-    setUischema,
-  ] = useStateWithOptionalSetter<UISchemaElementType>(
+  uischema: [uischema, setUischema] = useOptionalState<UISchemaElementType>(
     defaultUISchemaElementType,
   ),
-  editMode: [editMode, setEditMode] = useStateWithOptionalSetter<
-    "json" | "gui"
-  >("gui"),
+  editMode: [editMode, setEditMode] = useOptionalState<"json" | "gui">("gui"),
 }) => (
   <>
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -78,13 +75,10 @@ export const UischemaEdit = ({
 const identityFunction = <T,>(x: T) => x;
 
 const UischemaGuiEdit = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+  schema: [schema, setSchema] = useOptionalState<JsonSchemaStandard>(
     defaultJsonSchemaStandard,
   ),
-  uischema: [
-    uischema,
-    setUischema,
-  ] = useStateWithOptionalSetter<UISchemaElementType>(
+  uischema: [uischema, setUischema] = useOptionalState<UISchemaElementType>(
     defaultUISchemaElementType,
   ),
   editUiSchema: [editUiSchema, setEditUiSchema, error] = useSyncedState(
@@ -99,13 +93,16 @@ const UischemaGuiEdit = ({
     changed,
     save,
     revert,
-  ] = useBufferedState([editUiSchema, setEditUiSchema]),
+  ] = useSaveState([editUiSchema, setEditUiSchema]),
 }) => (
   <>
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Button
         disabled={bufferedUiSchema === defaultUISchemaElementType}
-        onPress={() => setBufferedUiSchema(defaultUISchemaElementType)}
+        onPress={
+          setBufferedUiSchema &&
+          (() => setBufferedUiSchema(defaultUISchemaElementType))
+        }
       >
         Clear
       </Button>
@@ -127,10 +124,7 @@ const UischemaGuiEdit = ({
 );
 
 const UischemaJsonEdit = ({
-  uischema: [
-    uischema,
-    setUischema,
-  ] = useStateWithOptionalSetter<UISchemaElementType>(
+  uischema: [uischema, setUischema] = useOptionalState<UISchemaElementType>(
     defaultUISchemaElementType,
   ),
   bufferedUiSchema: [
@@ -139,23 +133,27 @@ const UischemaJsonEdit = ({
     changed,
     save,
     revert,
-  ] = useBufferedState([uischema, setUischema]),
+  ] = useSaveState([uischema, setUischema]),
   editUiSchema: [editUiSchema, setEditUiSchema, error] = useSyncedState(
     "",
     [bufferedUiSchema, setBufferedUiSchema],
     convertUiSchemaToString,
     convertStringToUiSchema,
   ),
-  debouncedUiSchema: [
-    debouncedUiSchema,
-    setDebouncedUiSchema,
-  ] = useBufferedState([editUiSchema, setEditUiSchema], true, 1500),
+  debouncedUiSchema: [debouncedUiSchema, setDebouncedUiSchema] = useSaveState(
+    [editUiSchema, setEditUiSchema],
+    true,
+    1500,
+  ),
 }) => (
   <>
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Button
         disabled={bufferedUiSchema === defaultUISchemaElementType}
-        onPress={() => setBufferedUiSchema(defaultUISchemaElementType)}
+        onPress={
+          setBufferedUiSchema &&
+          (() => setBufferedUiSchema(defaultUISchemaElementType))
+        }
       >
         Clear
       </Button>
@@ -198,13 +196,10 @@ const addScopesEnum = (scopes: string[]) =>
   });
 
 const UischemaGui = ({
-  jsonschema: [jsonschema] = useStateWithOptionalSetter<JsonSchemaStandard>({
+  jsonschema: [jsonschema] = useOptionalState<JsonSchemaStandard>({
     type: "object",
   }),
-  uischema: [
-    uischema,
-    setUischema,
-  ] = useStateWithOptionalSetter<UISchemaElementType>(
+  uischema: [uischema, setUischema] = useOptionalState<UISchemaElementType>(
     defaultUISchemaElementType,
   ),
   scopes = ["#", ...buildRefs(jsonschema)],

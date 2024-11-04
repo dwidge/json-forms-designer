@@ -3,39 +3,35 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { ErrorFallback } from "@dwidge/fallback-rnw";
+import { useOptionalState, useSyncedState } from "@dwidge/hooks-react";
 import React from "react";
 import ErrorBoundary from "react-native-error-boundary";
-import {
-  convertJsonFormDataToString,
-  convertStringToJsonFormData,
-  defaultJsonFormData,
-  defaultJsonFormDataString,
-} from "../types/index.js";
-import { State } from "../utils/State.js";
-import { useStateWithOptionalSetter } from "../utils/useStateWithOptionalSetter.js";
-import { useSyncedState } from "../utils/useSyncedState.js";
+import { FormThemeProvider } from "../themes/FormThemeProvider.js";
 import {
   convertFormSchemaToString,
   convertStringToFormSchema,
   defaultFormSchema,
   defaultFormSchemaString,
 } from "../types/FormSchema.js";
+import {
+  convertJsonFormDataToString,
+  convertStringToJsonFormData,
+  defaultJsonFormData,
+  defaultJsonFormDataString,
+} from "../types/index.js";
 import { FormEdit } from "./jsonforms/FormEdit.js";
 
 export const FormSubmit = ({
-  schemaString: [
-    schemaString,
-    setSchemaString,
-  ] = useStateWithOptionalSetter<string>(
+  schemaString: [schemaString, setSchemaString] = useOptionalState<string>(
     defaultFormSchemaString,
-  ) as State<string>,
+  ),
   schema: [schema, setSchema, schemaError] = useSyncedState(
     defaultFormSchema,
     [schemaString, setSchemaString],
     convertStringToFormSchema,
     convertFormSchemaToString,
   ),
-  dataString: [dataString, setDataString] = useStateWithOptionalSetter<string>(
+  dataString: [dataString, setDataString] = useOptionalState<string>(
     defaultJsonFormDataString,
   ),
   data: [data, setData, dataError] = useSyncedState(
@@ -45,12 +41,14 @@ export const FormSubmit = ({
     convertJsonFormDataToString,
   ),
 }) => (
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <FormEdit
-      schema={schema.schema}
-      uischema={schema.uischema}
-      data={[data, setData]}
-    />
-    {schemaError && <ErrorFallback error={schemaError} />}
-  </ErrorBoundary>
+  <FormThemeProvider>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <FormEdit
+        schema={schema?.schema}
+        uischema={schema?.uischema}
+        data={[data, setData]}
+      />
+      {schemaError && <ErrorFallback error={schemaError} />}
+    </ErrorBoundary>
+  </FormThemeProvider>
 );

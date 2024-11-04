@@ -3,21 +3,21 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { ErrorFallback } from "@dwidge/fallback-rnw";
-import { Button, TextInput, View } from "@dwidge/json-forms-paper";
+import {
+  useOptionalState,
+  useSaveState,
+  useSyncedState,
+} from "@dwidge/hooks-react";
+import {
+  Button,
+  paperCells,
+  paperRenderers,
+  TextInput,
+  View,
+} from "@dwidge/json-forms-paper";
+import { JsonForms } from "@jsonforms/react";
 import React, { useState } from "react";
 import ErrorBoundary from "react-native-error-boundary";
-import { useBufferedState } from "../../utils/useBufferedState.js";
-import { useSyncedState } from "../../utils/useSyncedState.js";
-import { useStateWithOptionalSetter } from "../../utils/useStateWithOptionalSetter.js";
-import {
-  convertJsonSchemaStandardToString,
-  convertStringToJsonSchemaStandard,
-  defaultJsonSchemaStandard,
-  JsonSchemaStandard,
-} from "../../types/jsonSchema/JsonSchemaStandard.js";
-import { defaultJsonSchemaCustom } from "../../types/jsonSchema/JsonSchemaCustom.js";
-import { paperCells, paperRenderers } from "@dwidge/json-forms-paper";
-import { JsonForms } from "@jsonforms/react";
 import {
   editingSchema,
   jsonschemaUischema,
@@ -27,9 +27,16 @@ import {
   convertJsonSchemaStandardToCustom,
   JsonSchemaCustom,
 } from "../../types/index.js";
+import { defaultJsonSchemaCustom } from "../../types/jsonSchema/JsonSchemaCustom.js";
+import {
+  convertJsonSchemaStandardToString,
+  convertStringToJsonSchemaStandard,
+  defaultJsonSchemaStandard,
+  JsonSchemaStandard,
+} from "../../types/jsonSchema/JsonSchemaStandard.js";
 
 export const SchemaEdit = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+  schema: [schema, setSchema] = useOptionalState<JsonSchemaStandard>(
     defaultJsonSchemaStandard,
   ),
   editMode: [editMode, setEditMode] = useState<"json" | "gui">("gui"),
@@ -60,7 +67,7 @@ export const SchemaEdit = ({
 );
 
 const SchemaGuiEdit = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+  schema: [schema, setSchema] = useOptionalState<JsonSchemaStandard>(
     defaultJsonSchemaStandard,
   ),
   editSchema: [editSchema, setEditSchema, error] = useSyncedState(
@@ -75,13 +82,16 @@ const SchemaGuiEdit = ({
     changed,
     save,
     revert,
-  ] = useBufferedState([editSchema, setEditSchema]),
+  ] = useSaveState([editSchema, setEditSchema]),
 }) => (
   <>
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Button
         disabled={bufferedSchema === defaultJsonSchemaCustom}
-        onPress={() => setBufferedSchema(defaultJsonSchemaCustom)}
+        onPress={
+          setBufferedSchema &&
+          (() => setBufferedSchema(defaultJsonSchemaCustom))
+        }
       >
         Clear
       </Button>
@@ -100,7 +110,7 @@ const SchemaGuiEdit = ({
 );
 
 const SchemaJsonEdit = ({
-  schema: [schema, setSchema] = useStateWithOptionalSetter<JsonSchemaStandard>(
+  schema: [schema, setSchema] = useOptionalState<JsonSchemaStandard>(
     defaultJsonSchemaStandard,
   ),
   bufferedSchema: [
@@ -109,14 +119,14 @@ const SchemaJsonEdit = ({
     changed,
     save,
     revert,
-  ] = useBufferedState([schema, setSchema]),
+  ] = useSaveState([schema, setSchema]),
   editSchema: [editSchema, setEditSchema, error] = useSyncedState(
     "",
     [bufferedSchema, setBufferedSchema],
     convertJsonSchemaStandardToString,
     convertStringToJsonSchemaStandard,
   ),
-  debouncedSchema: [debouncedSchema, setDebouncedSchema] = useBufferedState(
+  debouncedSchema: [debouncedSchema, setDebouncedSchema] = useSaveState(
     [editSchema, setEditSchema],
     true,
     1500,
@@ -126,7 +136,10 @@ const SchemaJsonEdit = ({
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Button
         disabled={bufferedSchema === defaultJsonSchemaStandard}
-        onPress={() => setBufferedSchema(defaultJsonSchemaStandard)}
+        onPress={
+          setBufferedSchema &&
+          (() => setBufferedSchema(defaultJsonSchemaStandard))
+        }
       >
         Clear
       </Button>
@@ -151,7 +164,7 @@ const SchemaJsonEdit = ({
 );
 
 const SchemaGui = ({
-  jsonschema: [jsonschema, setSchema] = useState<JsonSchemaCustom>(
+  jsonschema: [jsonschema, setSchema] = useOptionalState<JsonSchemaCustom>(
     defaultJsonSchemaCustom,
   ),
 }) => (
@@ -167,6 +180,6 @@ const SchemaGui = ({
       },
     ]}
     data={jsonschema}
-    onChange={({ data }) => setSchema(data)}
+    onChange={setSchema && (({ data }) => setSchema(data))}
   />
 );
