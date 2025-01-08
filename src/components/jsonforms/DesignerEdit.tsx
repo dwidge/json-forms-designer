@@ -14,7 +14,9 @@ import { UischemaEdit } from "./UischemaEdit.js";
 
 export const DesignerEdit = ({
   schema = useOptionalState<JsonSchemaStandard>(testSchema1.jsonSchema),
-  uischema = useOptionalState<UISchemaElementType>(() => testSchema1.uiSchema),
+  uischemas = useOptionalState<UISchemaElementType[]>(
+    testSchema1.uiSchemas ?? [],
+  ),
   data: [data, setData] = useOptionalState<JsonFormData>({}),
   editMode: [editMode, setEditMode] = useState<
     "preview" | "uischema" | "schema"
@@ -22,7 +24,11 @@ export const DesignerEdit = ({
 }) => (
   <>
     <View
-      style={{ gap: 10, flexDirection: "row", justifyContent: "space-between" }}
+      style={{
+        gap: 10,
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
     >
       <Button
         onPress={() => setEditMode("preview")}
@@ -34,23 +40,23 @@ export const DesignerEdit = ({
         onPress={() => setEditMode("uischema")}
         className={editMode === "uischema" ? "selected" : ""}
       >
-        Uischema
+        Form
       </Button>
       <Button
         onPress={() => setEditMode("schema")}
         className={editMode === "schema" ? "selected" : ""}
       >
-        Schema
+        Data
       </Button>
     </View>
     {editMode === "schema" ? (
       <SchemaEdit schema={schema} />
     ) : editMode === "uischema" ? (
-      <UischemaEdit schema={schema} uischema={uischema} />
+      <UischemaEdit schema={schema} uischemas={uischemas} />
     ) : (
       <FormEdit
         schema={schema[0]}
-        uischema={uischema[0]}
+        uischemas={uischemas[0]}
         data={[data, setData]}
       />
     )}

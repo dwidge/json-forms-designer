@@ -47,6 +47,10 @@ const lightStyledViewStylesheet = StyleSheet.create<Record<string, ViewStyle>>({
   "group-layout": {
     flexDirection: "column",
     gap: 10,
+    padding: 10,
+    backgroundColor: "#99999922",
+    overflow: "hidden",
+    borderRadius: 10,
   },
   "horizontal-layout-item": { flex: 1 },
   "category-list category-subcategories": {
@@ -128,12 +132,10 @@ const lightStyledViewStylesheet = StyleSheet.create<Record<string, ViewStyle>>({
   },
   "control-array item": {
     flexDirection: "row",
-    gap: 10,
   },
   "control-array item-render": {
     flex: 1,
     padding: 10,
-    marginHorizontal: -10,
     backgroundColor: "#99999922",
     overflow: "hidden",
     borderRadius: 10,

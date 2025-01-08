@@ -6,7 +6,8 @@ import { JsonSchemaStandard, UISchemaElementType } from "../types/index.js";
 
 export const testSchema1: {
   jsonSchema: JsonSchemaStandard;
-  uiSchema: UISchemaElementType;
+  uiSchema?: UISchemaElementType;
+  uiSchemas?: UISchemaElementType[];
 } = {
   jsonSchema: {
     type: "object",
@@ -29,31 +30,32 @@ export const testSchema1: {
     },
     required: ["name", "due_date"],
   },
-  uiSchema: {
-    type: "VerticalLayout",
-    elements: [
-      {
-        type: "Control",
-        label: false,
-        scope: "#/properties/done",
-      },
-      {
-        type: "Control",
-        scope: "#/properties/name",
-      },
-      {
-        type: "HorizontalLayout",
-        elements: [
-          {
-            type: "Control",
-            scope: "#/properties/due_date",
-          },
-          {
-            type: "Control",
-            scope: "#/properties/recurrence",
-          },
-        ],
-      },
-    ],
-  },
+  uiSchemas: [
+    {
+      type: "VerticalLayout",
+      elements: [
+        {
+          type: "Control",
+          scope: "#/properties/done",
+        },
+        {
+          type: "Control",
+          scope: "#/properties/name",
+        },
+        {
+          type: "HorizontalLayout",
+          elements: [
+            {
+              type: "Control",
+              scope: "#/properties/due_date",
+            },
+            {
+              type: "Control",
+              scope: "#/properties/recurrence",
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };

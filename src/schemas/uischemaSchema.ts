@@ -8,8 +8,9 @@ import {
   UISchemaElement,
 } from "@jsonforms/core";
 import { JsonSchemaStandard } from "../types";
+import merge from "ts-deepmerge";
 
-const uiproperty = {
+const uischemaItem = {
   type: "object",
   properties: {
     type: {
@@ -28,6 +29,11 @@ const uiproperty = {
     label: {
       type: "string",
       title: "Label",
+      nullable: true,
+    },
+    text: {
+      type: "string",
+      title: "Text",
       nullable: true,
     },
     scope: {
@@ -50,19 +56,20 @@ const uiproperty = {
       title: "Options",
       nullable: true,
       properties: {
+        ref: {
+          type: "string",
+          title: "Ref",
+          nullable: true,
+        },
         multi: {
           type: "boolean",
           title: "Multiline",
           nullable: true,
         },
         detail: {
-          type: "array",
+          type: "object",
+          $ref: "#/definitions/property",
           title: "Detail",
-          items: {
-            type: "object",
-            $ref: "#/definitions/property",
-            required: ["type"],
-          },
           nullable: true,
         },
       },
@@ -70,16 +77,50 @@ const uiproperty = {
     },
   },
   required: ["type"],
+  default: { type: "Label", text: "" },
 } satisfies JsonSchemaStandard;
 
-export const uischemaSchema = {
-  ...uiproperty,
+const editorUischemaItem = merge(uischemaItem, {
+  properties: {
+    options: {
+      properties: {
+        detail: {
+          type: "array",
+          title: "Detail",
+          $ref: undefined,
+          items: {
+            type: "object",
+            $ref: "#/definitions/property",
+            required: ["type"],
+          },
+          maxItems: 1,
+          nullable: true,
+        },
+      },
+    },
+  },
+}) as JsonSchemaStandard;
+
+export const layoutSchema = {
+  type: "array",
+  items: { $ref: "#/definitions/property" },
   definitions: {
-    property: uiproperty,
+    property: editorUischemaItem,
   },
 } satisfies JsonSchemaStandard;
 
-export const uischemaUischema = {
+export const layoutUischema = {
+  type: "Control",
+  scope: "#",
+  options: {
+    summary: {
+      type: "Control",
+      scope: "#/properties/options/properties/ref",
+    },
+  },
+};
+
+export const layoutRegistryUischema = {
   type: "VerticalLayout",
   elements: [
     {

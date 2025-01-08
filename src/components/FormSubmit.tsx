@@ -45,7 +45,9 @@ export const FormSubmit = ({
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <FormEdit
         schema={schema?.schema}
-        uischema={schema?.uischema}
+        uischemas={
+          schema?.uischemas ?? (schema?.uischema ? [schema?.uischema] : [])
+        }
         data={[data, setData]}
       />
       {schemaError && <ErrorFallback error={schemaError} />}

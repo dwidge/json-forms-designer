@@ -2,12 +2,7 @@ import { z } from "zod";
 import { JsonSchemaStandard } from "./JsonSchemaStandard";
 
 export const JsonSchemaCustom = JsonSchemaStandard.extend({
-  definitions: z
-    .record(
-      z.string(),
-      z.lazy(() => JsonSchemaCustom),
-    )
-    .optional(),
+  definitions: z.array(z.lazy(() => JsonSchemaCustom)).optional(),
   properties: z
     .lazy(() => JsonSchemaCustom)
     .array()

@@ -3,19 +3,21 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import z from "zod";
-export const JsonFormData = z.record(
-  z.string(),
-  z
-    .union([
-      z.string(),
-      z.number(),
-      z.boolean(),
-      z.lazy(() => JsonFormData),
-      z.lazy(() => JsonFormData.array()),
-      z.null(),
-    ])
-    .optional(),
-);
+export const JsonFormData = z
+  .record(
+    z.string(),
+    z
+      .union([
+        z.string(),
+        z.number(),
+        z.boolean(),
+        z.lazy(() => JsonFormData),
+        z.lazy(() => JsonFormData.array()),
+        z.null(),
+      ])
+      .optional(),
+  )
+  .nullable();
 export type JsonFormData = z.infer<typeof JsonFormData>;
 
 export const defaultJsonFormData: JsonFormData = {};

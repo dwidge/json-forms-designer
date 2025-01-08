@@ -11,6 +11,7 @@ export const convertJsonSchemaCustomToStandard = trace(
   "convertJsonSchemaCustomToStandard",
   ({
     properties,
+    definitions,
     items,
     validProperties = JsonSchemaCustom.array()
       .parse(properties ?? [])
@@ -25,6 +26,12 @@ export const convertJsonSchemaCustomToStandard = trace(
             ...v,
             properties: Object.fromEntries(
               validProperties.map(({ required, ...p }, i) => [
+                p.title,
+                convertJsonSchemaCustomToStandard(p),
+              ]),
+            ),
+            definitions: Object.fromEntries(
+              (definitions ?? []).map(({ ...p }, i) => [
                 p.title,
                 convertJsonSchemaCustomToStandard(p),
               ]),
@@ -50,11 +57,22 @@ export const convertJsonSchemaCustomToStandard = trace(
 
 export const convertJsonSchemaStandardToCustom = trace(
   "convertJsonSchemaStandardToCustom",
-  ({ properties, items, ...v }: JsonSchemaStandard): JsonSchemaCustom =>
+  ({
+    properties,
+    definitions,
+    items,
+    ...v
+  }: JsonSchemaStandard): JsonSchemaCustom =>
     JsonSchemaCustom.parse(
       v.type === "object" && properties
         ? {
             ...v,
+            definitions: Object.entries(definitions ?? {}).map(
+              ([key, value]) => ({
+                title: key,
+                ...convertJsonSchemaStandardToCustom(value),
+              }),
+            ),
             properties: Object.entries(properties).map(([key, value]) => ({
               title: key,
               ...convertJsonSchemaStandardToCustom(value),

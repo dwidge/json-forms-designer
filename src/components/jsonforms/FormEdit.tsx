@@ -14,15 +14,17 @@ import React from "react";
 import {
   defaultJsonSchemaStandard,
   defaultUISchemaElementType,
+  UISchemaElementType,
 } from "../../types/index.js";
+import { JsonSchema7, UISchemaElement } from "@jsonforms/core";
 
 export const FormEdit = ({
   schema = defaultJsonSchemaStandard,
-  uischema = defaultUISchemaElementType,
-  data: [data, setData] = useOptionalState<JsonFormData>({}),
+  uischemas = [defaultUISchemaElementType],
+  data: [data, setData] = useOptionalState<JsonFormData>(null),
   onReset = setData
     ? () => {
-        setData({});
+        setData(null);
       }
     : undefined,
   editMode: [editMode, setEditMode] = useOptionalState<"gui" | "json">("gui"),
@@ -54,9 +56,13 @@ export const FormEdit = ({
     {onReset && <Button onPress={onReset}>Reset</Button>}
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       {editMode === "json" ? (
-        <FormJson schema={schema} uischema={uischema} data={[data, setData]} />
+        <FormJson
+          schema={schema}
+          uischemas={uischemas}
+          data={[data, setData]}
+        />
       ) : (
-        <FormGui schema={schema} uischema={uischema} data={[data, setData]} />
+        <FormGui schema={schema} uischemas={uischemas} data={[data, setData]} />
       )}
     </ErrorBoundary>
   </>
@@ -64,21 +70,35 @@ export const FormEdit = ({
 
 const FormGui = ({
   schema = defaultJsonSchemaStandard,
-  uischema = defaultUISchemaElementType,
-  data: [data, setData] = useOptionalState({}),
+  uischemas = [defaultUISchemaElementType],
+  data: [data, setData] = useOptionalState<JsonFormData>(null),
 }) => (
-  <JsonForms
-    renderers={paperRenderers}
-    cells={paperCells}
-    schema={schema}
-    uischema={uischema}
-    data={data}
-    onChange={setData && (({ data }) => setData(data))}
-  />
+  <>
+    <JsonForms
+      renderers={paperRenderers}
+      cells={paperCells}
+      schema={schema}
+      uischema={uischemas[0] as UISchemaElement}
+      uischemas={uischemas.map(
+        (
+          s: UISchemaElementType,
+          i,
+          a,
+          ref = s.options?.ref as string | undefined,
+        ) => ({
+          tester: (schema, schemaPath: string, path: string) =>
+            ref && schemaPath.includes(ref.slice(1)) ? 2 : -1,
+          uischema: s as UISchemaElement,
+        }),
+      )}
+      data={data}
+      onChange={setData && (({ data }) => setData(data))}
+    />
+  </>
 );
 
 const FormJson = ({
   schema = defaultJsonSchemaStandard,
-  uischema = defaultUISchemaElementType,
-  data: [data, setData] = useOptionalState({}),
+  uischemas = [defaultUISchemaElementType],
+  data: [data, setData] = useOptionalState<JsonFormData>(null),
 }) => <Text>{JSON.stringify(data, null, 2)}</Text>;

@@ -4,68 +4,83 @@
 
 import { z } from "zod";
 
-// Define a Zod type for RuleEffect enum
 const RuleEffect = z.enum(["HIDE", "SHOW", "ENABLE", "DISABLE"]);
+export type RuleEffectType = "HIDE" | "SHOW" | "ENABLE" | "DISABLE";
 
-// Scopable schema
 const Scopable = z.object({
   scope: z.string().optional(),
 });
+export type ScopableType = {
+  scope?: string;
+};
 
-// Scoped schema extends Scopable with a mandatory scope
 const Scoped = Scopable.extend({
   scope: z.string(),
 });
+export type ScopedType = {
+  scope: string;
+};
 
-// Labelable schema
 const Labelable = z.object({
-  label: z.union([z.string(), z.any()]).optional(),
+  label: z.string().optional(),
 });
+export type LabelableType = {
+  label?: string;
+};
 
-// Internationalizable schema
 const Internationalizable = z.object({
   i18n: z.string().optional(),
 });
+export type InternationalizableType = {
+  i18n?: string;
+};
 
-// Rule schema
-const Rule = z.object({
-  effect: RuleEffect,
-  condition: z.lazy(() => Condition),
-});
-
-// ConditionBase schema
 const ConditionBase = z.object({
   type: z.string().optional(),
 });
+export type ConditionBaseType = {
+  type?: string;
+};
 
-// LeafCondition schema that extends ConditionBase and Scoped
 const LeafCondition = ConditionBase.merge(Scoped).extend({
   type: z.literal("LEAF"),
   expectedValue: z.any(),
 });
+export type LeafConditionType = {
+  type: "LEAF";
+  expectedValue: any;
+} & ScopedType;
 
-// SchemaBasedCondition schema that extends ConditionBase and Scoped
 const SchemaBasedCondition = ConditionBase.merge(Scoped).extend({
-  schema: z.any(), // Replace with appropriate JsonSchema when available
+  schema: z.any(),
   failWhenUndefined: z.boolean().optional(),
 });
+export type SchemaBasedConditionType = {
+  schema: any;
+  failWhenUndefined?: boolean;
+} & ScopedType;
 
-// ComposableCondition schema that extends ConditionBase
 const ComposableCondition = ConditionBase.extend({
   conditions: z.array(z.lazy(() => Condition)),
 });
+export type ComposableConditionType = {
+  conditions: ConditionType[];
+};
 
-// OrCondition schema that extends ComposableCondition
 const OrCondition = ComposableCondition.extend({
   type: z.literal("OR"),
 });
+export type OrConditionType = {
+  type: "OR";
+} & ComposableConditionType;
 
-// AndCondition schema that extends ComposableCondition
 const AndCondition = ComposableCondition.extend({
   type: z.literal("AND"),
 });
+export type AndConditionType = {
+  type: "AND";
+} & ComposableConditionType;
 
-// Create the Condition union type that includes all subtypes
 const Condition = z.union([
   LeafCondition,
   SchemaBasedCondition,
@@ -73,64 +88,101 @@ const Condition = z.union([
   AndCondition,
   ConditionBase,
 ]);
+export type ConditionType =
+  | LeafConditionType
+  | SchemaBasedConditionType
+  | OrConditionType
+  | AndConditionType
+  | ConditionBaseType;
 
-// Base UISchemaElement schema (will be extended later to handle all subtypes)
+const Rule = z.object({
+  effect: RuleEffect,
+  condition: Condition,
+});
+export type RuleType = {
+  effect: RuleEffectType;
+  condition: ConditionType;
+};
+
 const UISchemaElementBase = z.object({
+  $id: z.ostring(),
   type: z.string(),
   rule: Rule.optional(),
   options: z.record(z.any()).optional(),
 });
+export type UISchemaElementBaseType = {
+  $id?: string;
+  type: string;
+  rule?: RuleType;
+  options?: Record<string, any>;
+};
 
-// Layout schema that extends UISchemaElementBase
 const LayoutBase = UISchemaElementBase.extend({
-  elements: z.array(z.lazy(() => UISchemaElement)), // Recursive reference
+  elements: z.array(z.lazy(() => UISchemaElement)),
 });
+export type LayoutBaseType = {
+  elements: UISchemaElementType[];
+} & UISchemaElementBaseType;
 
-// VerticalLayout schema
 const VerticalLayout = LayoutBase.extend({
   type: z.literal("VerticalLayout"),
 });
+export type VerticalLayoutType = {
+  type: "VerticalLayout";
+} & LayoutBaseType;
 
-// HorizontalLayout schema
 const HorizontalLayout = LayoutBase.extend({
   type: z.literal("HorizontalLayout"),
 });
+export type HorizontalLayoutType = {
+  type: "HorizontalLayout";
+} & LayoutBaseType;
 
-// GroupLayout schema that extends LayoutBase, Labelable, and Internationalizable
 const GroupLayout = LayoutBase.merge(Labelable)
   .merge(Internationalizable)
   .extend({
     type: z.literal("Group"),
   });
+export type GroupLayoutType = {
+  type: "Group";
+} & LayoutBaseType &
+  LabelableType &
+  InternationalizableType;
 
-// LabelDescription schema
-const LabelDescription = z.object({
-  text: z.string().optional(),
-  show: z.boolean().optional(),
-});
-
-// LabelElement schema that extends UISchemaElementBase and Internationalizable
 const LabelElement = UISchemaElementBase.merge(Internationalizable).extend({
   type: z.literal("Label"),
   text: z.string(),
 });
+export type LabelElementType = {
+  type: "Label";
+  text: string;
+} & UISchemaElementBaseType &
+  InternationalizableType;
 
-// ControlElement schema that extends UISchemaElementBase, Scoped, Labelable, and Internationalizable
 const ControlElement = UISchemaElementBase.merge(Scoped)
   .merge(Labelable)
   .merge(Internationalizable)
   .extend({
     type: z.literal("Control"),
   });
+export type ControlElementType = {
+  type: "Control";
+} & UISchemaElementBaseType &
+  ScopedType &
+  LabelableType &
+  InternationalizableType;
 
-// Category schema that extends LayoutBase, Labeled, and Internationalizable
 const Category = LayoutBase.merge(Labelable)
   .merge(Internationalizable)
   .extend({
     type: z.literal("Category"),
   });
+export type CategoryType = {
+  type: "Category";
+} & LayoutBaseType &
+  LabelableType &
+  InternationalizableType;
 
-// Categorization schema that extends UISchemaElementBase, Labeled, and Internationalizable
 const Categorization = UISchemaElementBase.merge(Labelable)
   .merge(Internationalizable)
   .extend({
@@ -139,17 +191,26 @@ const Categorization = UISchemaElementBase.merge(Labelable)
       z.union([z.lazy(() => Category), z.lazy(() => Categorization)]),
     ),
   });
+export type CategorizationType = {
+  type: "Categorization";
+  elements: (CategoryType | CategorizationType)[];
+} & UISchemaElementBaseType &
+  LabelableType &
+  InternationalizableType;
 
-// Create the Layout union type that includes all subtypes
 const Layout = z.union([
   VerticalLayout,
   HorizontalLayout,
   GroupLayout,
   LayoutBase,
 ]);
+export type LayoutType =
+  | VerticalLayoutType
+  | HorizontalLayoutType
+  | GroupLayoutType
+  | LayoutBaseType;
 
-// Create the UISchemaElement union to include all subtypes
-const UISchemaElement = z.union([
+const UISchemaElement = z.discriminatedUnion("type", [
   VerticalLayout,
   HorizontalLayout,
   GroupLayout,
@@ -157,21 +218,30 @@ const UISchemaElement = z.union([
   ControlElement,
   Category,
   Categorization,
-  LeafCondition,
-  SchemaBasedCondition,
-  OrCondition,
-  AndCondition,
-  UISchemaElementBase, // Base type should be included as fallback
 ]);
 
-// // Export the main UISchemaElement schema and its inferred type
 export const UISchemaElementType = UISchemaElement;
-export type UISchemaElementType = z.infer<typeof UISchemaElement>;
+export type UISchemaElementType =
+  | VerticalLayoutType
+  | HorizontalLayoutType
+  | GroupLayoutType
+  | LabelElementType
+  | ControlElementType
+  | CategoryType
+  | CategorizationType;
+
 export const defaultUISchemaElementType: UISchemaElementType = {
   type: "VerticalLayout",
+  elements: [],
 };
+export const defaultUISchemas: UISchemaElementType[] = [
+  {
+    type: "VerticalLayout",
+    elements: [],
+  },
+];
 
-export const convertUiSchemaToString = (s: UISchemaElementType): string =>
+export const convertUiSchemaToString = (s: UISchemaElementType[]): string =>
   JSON.stringify(s, null, 2);
-export const convertStringToUiSchema = (s: string): UISchemaElementType =>
-  UISchemaElementType.parse(JSON.parse(s));
+export const convertStringToUiSchema = (s: string): UISchemaElementType[] =>
+  UISchemaElementType.array().parse(JSON.parse(s));

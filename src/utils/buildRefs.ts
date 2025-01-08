@@ -11,10 +11,10 @@ import { JsonSchemaStandard } from "../types/index.js";
  * @returns A list of ref strings.
  */
 export const buildRefs = (
-  schema: JsonSchemaStandard,
+  schema?: JsonSchemaStandard,
   basePath: string = "#",
 ): string[] =>
-  Object.entries(schema.properties ?? {}).flatMap(
+  Object.entries(schema?.properties ?? {}).flatMap(
     ([k, p], _i, _a, currentPath = `${basePath}/properties/${k}`) => [
       currentPath,
       ...(p.type === "object" && p.properties

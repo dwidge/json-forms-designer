@@ -32,17 +32,34 @@ export const FormDesigner = ({
         schema={[
           schema?.schema,
           setSchema &&
-            ((schema) =>
-              setSchema((prev) =>
-                typeof schema === "function"
-                  ? { ...prev, schema: schema(prev.schema) }
-                  : { ...prev, schema },
-              )),
+            ((
+              schema,
+              getSchema = typeof schema === "function" ? schema : () => schema,
+            ) =>
+              setSchema((prev) => ({
+                ...prev,
+                schema: getSchema(prev.schema),
+              }))),
         ]}
-        uischema={[
-          schema?.uischema,
+        uischemas={[
+          schema && [schema.uischema, ...(schema?.uischemas ?? [])],
           setSchema &&
-            ((uischema) => setSchema((prev) => ({ ...prev, uischema }))),
+            ((
+              uischemas,
+              getUischemas = typeof uischemas === "function"
+                ? uischemas
+                : () => uischemas,
+            ) =>
+              setSchema(
+                (
+                  prev,
+                  [uischema, ...uischemas] = getUischemas(prev.uischemas ?? []),
+                ) => ({
+                  ...prev,
+                  uischema,
+                  uischemas,
+                }),
+              )),
         ]}
       />
       {error && <ErrorFallback error={error} />}

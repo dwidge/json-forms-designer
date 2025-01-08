@@ -45,6 +45,16 @@ export const property = {
       properties: {},
       default: { type: "string" },
     },
+    definitions: {
+      type: "object",
+      title: "Definitions",
+      additionalProperties: {
+        type: "object",
+        $ref: "#/definitions/property",
+      },
+      properties: {},
+      default: {},
+    },
     items: {
       type: "object",
       $ref: "#/definitions/property",
@@ -85,6 +95,15 @@ export const editingProperty = {
     properties: {
       type: "array",
       title: "Properties",
+      items: {
+        type: "object",
+        $ref: "#/definitions/property",
+      },
+      default: [],
+    },
+    definitions: {
+      type: "array",
+      title: "Definitions",
       items: {
         type: "object",
         $ref: "#/definitions/property",
@@ -196,6 +215,12 @@ export const jsonschemaUischema = {
     {
       type: "Control",
       scope: "#/properties/properties",
+      rule: objectRule,
+      options: { summary: { type: "Control", scope: "#/properties/title" } },
+    },
+    {
+      type: "Control",
+      scope: "#/properties/definitions",
       rule: objectRule,
       options: { summary: { type: "Control", scope: "#/properties/title" } },
     },

@@ -12,8 +12,13 @@ import {
 export const FormSchema = z.object({
   schema: JsonSchemaStandard,
   uischema: UISchemaElementType,
+  uischemas: UISchemaElementType.array().optional(),
 });
-export type FormSchema = z.infer<typeof FormSchema>;
+export type FormSchema = {
+  schema: JsonSchemaStandard;
+  uischema: UISchemaElementType;
+  uischemas?: UISchemaElementType[];
+};
 
 export const defaultFormSchema: FormSchema = {
   schema: {
@@ -21,6 +26,7 @@ export const defaultFormSchema: FormSchema = {
     properties: {},
   },
   uischema: defaultUISchemaElementType,
+  uischemas: [],
 };
 export const defaultFormSchemaString: string =
   JSON.stringify(defaultFormSchema);
@@ -28,4 +34,4 @@ export const defaultFormSchemaString: string =
 export const convertFormSchemaToString = (s: FormSchema): string =>
   JSON.stringify(s);
 export const convertStringToFormSchema = (s: string): FormSchema =>
-  FormSchema.parse({ ...defaultFormSchema, ...JSON.parse(s) });
+  FormSchema.parse({ ...defaultFormSchema, ...JSON.parse(s) }) as any;
