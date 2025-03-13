@@ -1,6 +1,6 @@
 {
   "name": "@dwidge/json-forms-designer",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Editor for Json Forms.",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "@dwidge/fallback-rnw": "^0.0.4",
     "@dwidge/hooks-react": "^0.0.15",
     "@dwidge/json-forms-paper": "^0.0.9",
-    "@dwidge/components-rnw": "^0.0.19",
+    "@dwidge/components-rnw": "^0.0.20",
     "@dwidge/trace-js": "^0.0.11",
     "@jsonforms/core": "^3.4.0",
     "@jsonforms/react": "^3.4.0",
