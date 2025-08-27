@@ -60,11 +60,5 @@
   "packageManager": "pnpm@9.12.1",
   "engines": {
     "node": ">=20"
-  },
-  "pnpm": {
-    "overrides": {
-      "@react-pdf/layout": "3.6.4",
-      "@react-pdf/textkit": "4.2.1"
-    }
   }
 }
